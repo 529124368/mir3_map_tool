@@ -27,12 +27,17 @@ func (m *Map) laodMap(mapPath string) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	//关闭文件流
 	defer f.Close()
+	//按照22字节读取
 	readBuff22 := make([]byte, 22)
+	//按照2字节读取
 	readBuff2 := make([]byte, 2)
+	//按照1字节读取
 	readBuff1 := make([]byte, 1)
+	//按照13字节读取
 	readBuff13 := make([]byte, 13)
-
+	//先读取22字节
 	f.Read(readBuff22)
 	//读取2字节
 	count, err := f.Read(readBuff2)
@@ -40,10 +45,12 @@ func (m *Map) laodMap(mapPath string) {
 		fmt.Println(err)
 	}
 	str := hex.EncodeToString(readBuff2[:count])
+	//调整高位地位位置
 	width, err := strconv.ParseInt(str[2:]+str[:2], 16, 0)
 	if err != nil {
 		fmt.Println(err)
 	}
+	//获取地图宽度
 	m.width = width
 	fmt.Println(width)
 	//读取2字节
@@ -53,6 +60,7 @@ func (m *Map) laodMap(mapPath string) {
 	}
 	str = hex.EncodeToString(readBuff2[:count])
 	height, err := strconv.ParseInt(str[2:]+str[:2], 16, 0)
+	//获取地图高度
 	m.height = height
 	if err != nil {
 		fmt.Println(err)
@@ -62,7 +70,7 @@ func (m *Map) laodMap(mapPath string) {
 	for i := range m.Cells {
 		m.Cells[i] = make([]*Cell, height)
 	}
-	//offset 28字节
+	//游标从文件开始读取28字节
 	f.Seek(28, 0)
 	var i, j int64
 	for i = 0; i < width; i++ {
